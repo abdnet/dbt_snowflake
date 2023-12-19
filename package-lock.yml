@@ -1,0 +1,12 @@
+packages:
+- package: dbt-labs/dbt_utils
+  version: 1.1.0
+- package: dbt-labs/audit_helper
+  version: 0.9.0
+- package: calogica/dbt_date
+  version: 0.7.2
+- package: calogica/dbt_expectations
+  version: 0.8.5
+- package: EqualExperts/dbt_unit_testing
+  version: 0.2.7
+sha1_hash: e2cd9e377bec3eb914bd6b73fcf278659634125a
