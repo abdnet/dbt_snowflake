@@ -79,6 +79,7 @@ sources:
             tests:
               - not_null
 
+
       - name: src_products
         description: One record per product. Includes details about products.
         columns:

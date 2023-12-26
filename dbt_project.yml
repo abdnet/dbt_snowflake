@@ -19,6 +19,18 @@ seed-paths: ["seeds"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
 
+
+
+on-run-start: 
+  - "{{ start__end__monitoring_global('START',this) }}"
+on-run-end: 
+  - "{{ start__end__monitoring_global('END',this) }}"
+
+
+
+
+
+
 target-path: "target"  # directory which will store compiled SQL files
 clean-targets:         # directories to be removed by `dbt clean`
   - "target"
@@ -27,6 +39,21 @@ clean-targets:         # directories to be removed by `dbt clean`
 vars:
   DIM_DATE_START: '1990-01-01'
   DIM_DATE_END: '2000-06-01'
+  batch_id: '{{invocation_id}}'
+  dbt_date:time_zone: 'Europe/Paris'
+  load_date: '{{ run_started_at.astimezone(modules.pytz.timezone("Europe/Paris")) }}'
+
+
+  #  Logger level
+  debug-level: 3
+  debug-level-Info: 1
+  debug-level-Warn: 2
+  debug-level-Err: 3
+# Monitoring
+  process_db_schema_table_name: 'AUDIT_ANALYTICS_DATABASE.MONITOR.PROCESS'
+
+
+
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 
@@ -38,21 +65,43 @@ vars:
 # using the `{{ config(...) }}` macro.
 
 models:
+  elementary:
+    +schema: "elementary"
   my_new_project:
     # Applies to all files under models/example/
     +database:  ANALYTICS
     Marts:
       tags: ['mart']
       +schema: reporting
+      +pre-hook: 
+        sql: '{{start__end__monitoring_local("START",this)}}'
+      +post-hook: 
+          sql: '{{start__end__monitoring_local("END",this)}}'
       +materialized: table
     Staging:
       tags: ['stg']
       +schema:  staging
+      +pre-hook: 
+        sql: '{{start__end__monitoring_local("START",this)}}'
+      +post-hook: 
+          sql: '{{start__end__monitoring_local("END",this)}}'
       +materialized:  view
     Objects:
       +materialized:  ephemeral
       tags: ['obj']
+      +pre-hook: 
+        sql: '{{start__end__monitoring_local("START",this)}}'
+      +post-hook: 
+          sql: '{{start__end__monitoring_local("END",this)}}'
     Transforming:
       +materialized: ephemeral
       tags: ['trans']
-    
+      +pre-hook: 
+        sql: '{{start__end__monitoring_local("START",this)}}'
+      +post-hook: 
+          sql: '{{start__end__monitoring_local("END",this)}}'
+seeds:
+  my_new_project:
+    +enabled: false
+    +schema: seed_data
+
