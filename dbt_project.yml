@@ -23,6 +23,7 @@ snapshot-paths: ["snapshots"]
 
 on-run-start: 
   - "{{ start__end__monitoring_global('START',this) }}"
+  #- "{{ drop_all_schema() }}"
 on-run-end: 
   - "{{ start__end__monitoring_global('END',this) }}"
 
@@ -43,14 +44,20 @@ vars:
   dbt_date:time_zone: 'Europe/Paris'
   load_date: '{{ run_started_at.astimezone(modules.pytz.timezone("Europe/Paris")) }}'
 
-
+# Monitoring
+  process_db_schema_table_name: 'AUDIT_ANALYTICS_DATABASE.MONITOR.PROCESS'
   #  Logger level
   debug-level: 3
   debug-level-Info: 1
   debug-level-Warn: 2
   debug-level-Err: 3
-# Monitoring
-  process_db_schema_table_name: 'AUDIT_ANALYTICS_DATABASE.MONITOR.PROCESS'
+
+# Initialisation
+  INIT_ALL_DATABASES: true
+  INIT_DATABASES: ['ANALYTICS','RAW']
+  ANALYTICS: ['REPORTING','STAGING']
+  RAW:  ['WH01']
+  
 
 
 
@@ -66,6 +73,7 @@ vars:
 
 models:
   elementary:
+    +database:  ANALYTICS
     +schema: "elementary"
   my_new_project:
     # Applies to all files under models/example/
@@ -87,7 +95,7 @@ models:
           sql: '{{start__end__monitoring_local("END",this)}}'
       +materialized:  view
     Objects:
-      +materialized:  ephemeral
+      +materialized:  table #ephemeral
       tags: ['obj']
       +pre-hook: 
         sql: '{{start__end__monitoring_local("START",this)}}'
@@ -102,6 +110,6 @@ models:
           sql: '{{start__end__monitoring_local("END",this)}}'
 seeds:
   my_new_project:
-    +enabled: false
+    +enabled: true
     +schema: seed_data
 

@@ -11,6 +11,7 @@
         {% set batch_process_id = var("batch_id") | replace("-", "_") %}
         {% set table_process = var("process_db_schema_table_name") %}
 
+    
         {% set new_monitoring %}
            insert into {{table_process}} (
                         LOAD_DTS, 
@@ -54,7 +55,7 @@
 
 {% endmacro %}
 
-{% macro start__end__monitoring_local(process_action,node) %}
+{% macro start__end__monitoring_local(process_action, node) %}
     {%- if execute -%}
 
         {% set log_message = (
@@ -65,9 +66,7 @@
 
         {% set environment_name = target.name.upper() %}
         {% set batch_process_id = var("batch_id") | replace("-", "_") %}
-        {% set table_process = (
-            var("process_db_schema_table_name")
-        ) %}
+        {% set table_process = var("process_db_schema_table_name") %}
         {% set new_monitoring %}
            insert into {{table_process}} (
                         LOAD_DTS, 

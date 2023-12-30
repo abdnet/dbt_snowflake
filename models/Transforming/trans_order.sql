@@ -24,15 +24,11 @@ with
         where store_id in (select id from stores)
     ),
 
-    valid_order_total_recalcul as (
 
-        select id, customer, ordered_at, store_id, subtotal, tax_paid, order_total
-        from valid_order_store_exist
-    ),
 
     renamed as (
         select id, customer, ordered_at, store_id, subtotal, tax_paid, order_total
-        from valid_order_total_recalcul
+        from valid_order_store_exist
     ),
 
     final as (select * from renamed)
