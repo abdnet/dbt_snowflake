@@ -1,0 +1,92 @@
+version: 2
+
+sources:
+  - name: ecommerce
+    database: RAW
+    schema: SEED_DATA
+    tables:
+      - name: src_customers
+        description: One record per customer. Includes information about customers.
+
+models:
+  - name: customers
+    description: One record per customer. Includes information about customers.
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('stg_customers')
+          name: QUALITY_DIM_COMPLETENESS_CUSTOMERS
+          config:
+            severity: warn
+
+    columns:
+      - name: id
+        description: "Primary key of the customers table."
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+              name: QUALITY_DIM_VALIDITY_CUSTOMERS_ID
+      - name: first_name
+        description: "First name of the customer."
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+              name: QUALITY_DIM_VALIDITY_CUSTOMERS_FIRST_NAME
+      - name: last_name
+        description: "Last name of the customer."
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: VARCHAR
+              name: QUALITY_DIM_VALIDITY_CUSTOMERS_LAST_NAME
+      - name: birthday
+        description: "Date of birth of the customer."
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list: [date, datetime, TIMESTAMP_NTZ]
+              name: QUALITY_DIM_VALIDITY_CUSTOMERS_BIRTHDAY
+          - dbt_utils.expression_is_true:
+              name: QUALITY_CONSISTENCY_CUSTOMERS_LAST_ORDER_LTE_FIRST_ORDERS
+              expression: "<=current_date"
+      - name: first_order
+        description: "Date of the customer's first order."
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list: [date, datetime, TIMESTAMP_NTZ]
+              name: QUALITY_DIM_VALIDITY_CUSTOMERS_FIRST_ORDERS
+
+      - name: last_order
+        description: "Date of the customer's last order."
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list: [date, datetime, TIMESTAMP_NTZ]
+              name: QUALITY_DIM_VALIDITY
+          - dbt_utils.expression_is_true:
+              name: QUALITY_DIM_VALIDITY_CUSTOMERS_LAST_ORDERS
+              expression: ">=first_order"
+
+      - name: total_orders
+        description: "Total number of orders placed by the customer."
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: NUMBER
+              name: QUALITY_DIM_VALIDITY_CUSTOMERS_TOTAL_ORDERS
+
+
+metrics:
+  - name: metric_1					## required
+    label: Metric Name				## required
+    model: ref('dim_customer')				## required
+    description: description	## optional
+
+    calculation_method: count		## required
+    expression: id						## required
+
+    timestamp: first_order		## optional
+    time_grains: [day, week, month, quarter, year]

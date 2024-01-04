@@ -1,0 +1,39 @@
+version: 2
+
+sources:
+  - name: ecommerce
+    database: RAW
+    schema: SEED_DATA
+    tables:
+      - name: src_items
+        description: One record per item in an order. Includes details about items.
+
+models:
+  - name: items
+    description: One record per item in an order. Includes details about items.
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('stg_items')
+          name: QUALITY_DIM_COMPLETENESS
+          config:
+            severity: warn
+    columns:
+      - name: id
+        description: Primary key of the items table
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        description: Foreign key referencing the order to which the item belongs
+        tests:
+          - not_null
+          - relationships:
+              to: ref('orders')
+              field: id
+      - name: sku
+        description: Stock Keeping Unit (SKU) of the item
+        tests:
+          - not_null
+          - relationships:
+              to: ref('products')
+              field: sku

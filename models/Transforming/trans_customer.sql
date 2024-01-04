@@ -33,7 +33,7 @@ with
     date_generator as (
         select
             row_num,
-            dateadd('WEEK', row_num*2, '1950-01-01') as date_day
+            dateadd('week', row_num*2, '1950-01-01') as date_day
         from row_numbers
     ),
     joined_data as (

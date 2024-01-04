@@ -1,0 +1,37 @@
+version: 2
+
+sources:
+  - name: ecommerce
+    database: RAW
+    schema: SEED_DATA
+    tables:
+      - name: src_stores
+        description: One record per store. Includes information about stores.
+models:
+  - name: stores
+    description: One record per store. Includes information about stores.
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('stg_stores')
+          name: QUALITY_DIM_COMPLETENESS
+          config:
+            severity: warn
+    columns:
+      - name: id
+        description: Primary key of the stores table
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: Name of the store
+        tests:
+          - not_null
+      - name: opened_at
+        description: Timestamp when the store was opened
+        tests:
+          - not_null
+      - name: tax_rate
+        description: Tax rate for the store
+        tests:
+          - not_null
+          - dbt_utils.not_constant

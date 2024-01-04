@@ -1,0 +1,39 @@
+version: 2
+
+sources:
+  - name: ecommerce
+    database: RAW
+    schema: SEED_DATA
+    tables:
+      - name: src_products
+        description: One record per product. Includes details about products.
+
+models:
+   - name: products
+     description: One record per product. Includes details about products.
+     tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('stg_products')
+          name: QUALITY_DIM_COMPLETENESS
+          config:
+            severity: warn
+     columns:
+      - name: sku
+        description: Stock Keeping Unit (SKU) of the product
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: Name of the product
+        tests:
+          - not_null
+      - name: type
+        description: Type of the product
+        tests:
+          - not_null
+      - name: price
+        description: Price of the product
+        tests:
+          - not_null
+      - name: description
+        description: Description of the product

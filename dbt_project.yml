@@ -57,6 +57,11 @@ vars:
   INIT_DATABASES: ['ANALYTICS','RAW']
   ANALYTICS: ['REPORTING','STAGING']
   RAW:  ['WH01']
+
+# Tests asset-paths:
+  ASSERT_DATA_TYPE: QUALITY_VALIDITY
+  ASSERT_DATA_CONSISTENCY:  QUALITY_CONSISTENCY
+  
   
 
 
@@ -97,6 +102,7 @@ models:
     Objects:
       +materialized:  table #ephemeral
       tags: ['obj']
+      +schema:  object
       +pre-hook: 
         sql: '{{start__end__monitoring_local("START",this)}}'
       +post-hook: 

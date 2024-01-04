@@ -1,0 +1,40 @@
+version: 2
+sources:
+  - name: ecommerce
+    database: RAW
+    schema: SEED_DATA
+    tables:
+      - name: src_supplies
+        description: One record per supply. Includes information about supplies.
+
+models:
+
+  - name: supplies
+    description: One record per supply. Includes information about supplies.
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('stg_supplies')
+          name: QUALITY_DIM_COMPLETENESS
+          config:
+            severity: warn
+    columns:
+      - name: id
+        description: Primary key of the supplies table
+        tests:
+          - not_null
+      - name: name
+        description: Name of the supply
+        tests:
+          - not_null
+      - name: cost
+        description: Cost of the supply
+        tests:
+          - not_null
+      - name: perishable
+        description: Indicates whether the supply is perishable
+        tests:
+          - not_null
+      - name: sku
+        description: Stock Keeping Unit (SKU) of the supply
+        tests:
+          - not_null
