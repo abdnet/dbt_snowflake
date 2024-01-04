@@ -1,0 +1,26 @@
+snowflake_DI:
+  target: DEV
+  outputs:
+    DEV:
+      account:  "{{ env_var('ACCOUNT') }}"
+      database: "{{ env_var('DATABASE') }}"
+      password: "{{ env_var('PASSWORD') }}"
+      role: "{{ env_var('ROLE') }}"
+      schema: "{{ env_var('SCHEMA') }}"
+      threads:  4
+      type: "{{ env_var('TYPE') }}"
+      user: "{{ env_var('USER') }}"
+      warehouse:  "{{ env_var('WAREHOUSE') }}"
+      query_tag:  "{{ env_var('QUERY_TAG') }}"
+    PROD:
+      account:  "{{ env_var('ACCOUNT') }}"
+      database: "{{ env_var('DATABASE') }}"
+      password: "{{ env_var('PASSWORD') }}"
+      role: "{{ env_var('ROLE') }}"
+      schema: "{{ env_var('SCHEMA') }}"
+      threads:  4
+      type: "{{ env_var('TYPE') }}"
+      user: "{{ env_var('USER') }}"
+      warehouse:  "{{ env_var('WAREHOUSE') }}"
+      query_tag:  "{{ env_var('QUERY_TAG') }}"
+
